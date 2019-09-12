@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      
+      <title>Screen Brawl</title>
+      
+      <!-- Libraries -->
+      <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+      <script src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js" ></script>
+      
+      <!-- CSS -->
+      <link rel="stylesheet" href="css/style.css">
+      
+  </head>
+  <body>
+      
+      <div id="nickname-view">
+          
+          <label>Username: </label>
+          <input id="nickname-input" maxlength="25" type="text">
+          <button id="nickname-input-button">Ok</button>
+          
+      </div>
+      
+      <div id="roomlist-view" v-if="!hide" v-cloak>
+          
+          <ul v-if="seenState == 'roomlist'">
+              <li v-bind:style="[index == selectedRoomIndex ? {'background':'grey'} : {'background':'white'}]" v-for="(room,index) in roomList" v-on:click="selectRoom(index)" v-on:dblclick= "joinRoom()">
+                  {{room}}
+              </li>
+              <button :disabled="selectedRoomIndex == null" v-on:click="joinRoom()">Join Room</button>
+              <button v-on:click="seenState = 'createRoomView'">Create Room</button>
+              <button v-on:click="refreshRoomList()">Refresh</button>
+          </ul>
+          
+          <div id=join-room-password-view v-if="seenState == 'passwordView'">
+              <label>Password: </label>
+              <input v-model="joinRoomPassword" maxlength="8" type="password">
+              <button v-on:click="seenState = 'roomlist'">Cancel</button>
+              <button v-on:click="joinRoomPasswordViewOk()">Ok</button>
+          </div>
+          
+          <div id="create-room-view" v-if="seenState == 'createRoomView'">
+              <label>Title: </label>
+              <input v-model="title" maxlength="32" type="text">
+              <label>Private: </label>
+              <input v-model="private" type="checkbox">
+              <label>Password: </label>
+              <input :disabled="!private" v-model="createRoomPassword" maxlength="8" type="text">
+              <button v-on:click="seenState = 'roomlist'">Cancel</button>
+              <button v-on:click="createRoom()">Ok</button>
+          </div>
+          
+      </div>
+      
+      <div id="game-view" v-if="!hide" v-cloak>
+          
+          <div id="settings-view" v-if="game.status == 'settings'">
+              <span>room: {{ roomSharedInfo.title }}</span>
+              <button>Ready</button>
+              <button>Leave</button>
+          </div>
+          
+      </div>
+
+  </body>
+    
+    <script>
+        // socket object -provides connection to the server- for all scripts
+        var socket = io();
+    </script>
+    
+    <!-- Custom Scripts -->
+    <script type="text/javascript" src="js/nickname-view.js"></script>
+    <script type="text/javascript" src="js/roomlist-view.js"></script>
+    <script type="text/javascript" src="js/game-view.js"></script>
+
+</html>
