@@ -148,4 +148,4 @@ var players = {};
 // keep tracking of rooms
 var roomList = {};
 var roomListSharedInfo = {};
-room.init(roomList,players); // initiliaze 
+room.init(roomList,roomListSharedInfo,players); // initiliaze 

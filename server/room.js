@@ -1,17 +1,19 @@
 var roomList;
 var players;
+var roomListSharedInfo;
 
 var game = require("./game");
 var UUID = require('uuid-js');
 
 // initialize function
-exports.init = function(_roomList,_players){
+exports.init = function(_roomList,_roomListSharedInfo,_players){
     roomList = _roomList;
+    roomListSharedInfo = _roomListSharedInfo;
     players = _players;
 }
 
 // room object
-exports.room = function(title,private,password,founder){
+exports.room = function(title,private,password,admin){
         
     // auto-id assigner
     this.id = UUID.create().toString();
@@ -19,8 +21,8 @@ exports.room = function(title,private,password,founder){
     this.title = title;
     this.private = private;
     this.password = password;
-    this.founder = founder;
-    this.players = [founder]; // keep track of players
+    this.admin = admin;
+    this.players = []; // keep track of players
     
     this.game = new game.game();
     
@@ -39,15 +41,19 @@ exports.room = function(title,private,password,founder){
     
     this.removePlayer = function(id){
         var index = this.players.findIndex(el => el == id);
-        
+                
         this.players.splice(index,1);
         this.game.playersNickname.splice(index,1);
-    };
-    
-    this.deleteRoom= function(){
         
+        // if no one is in the room then delete the room
+        if(this.players.length == 0) this.deleteRoom();
     };
     
-    this.addPlayer(founder); // add founder
+    this.deleteRoom = function(){
+        delete roomList[this.id];
+        delete roomListSharedInfo[this.id];
+    };
+    
+    this.addPlayer(admin); // add admin
     
 }
