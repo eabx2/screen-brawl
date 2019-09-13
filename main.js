@@ -34,13 +34,13 @@ io.sockets.on("connection", function(socket){
 
     socket.on("nickname", function(data, fn){
         // only work nickname status
-        if(players[socket.id].status != "inNickname") return; 
+        if(players[socket.id].status != player.playerStatus.inNickname) return; 
         
         players[socket.id].nickname = data.nickname;
         console.log(socket.id + " - nickname: " + data.nickname);
         
         // set player's status
-        players[socket.id].status = "inRoomlist";
+        players[socket.id].status = player.playerStatus.inRoomlist;
         
         // send roomlist to the player
         fn(roomListSharedInfo);
@@ -48,7 +48,7 @@ io.sockets.on("connection", function(socket){
     
     socket.on("refreshRoomList", function(fn){
         // only work roomlist status
-        if(players[socket.id].status != "inRoomlist") return; 
+        if(players[socket.id].status != player.playerStatus.inRoomlist) return; 
         
         fn(roomListSharedInfo);
     });
@@ -57,8 +57,10 @@ io.sockets.on("connection", function(socket){
         // only work roomlist status
         if(players[socket.id].status != "inRoomlist") return; 
         
+        // pass socket.id client automatically
         var newRoom = new room.room(data.title,data.private,data.password,socket.id);
         
+        // add newRoom into global roomList
         roomList[newRoom.id] = newRoom;
         
         roomListSharedInfo[newRoom.id] = newRoom.sharedInfo();
@@ -68,8 +70,9 @@ io.sockets.on("connection", function(socket){
         res["game"] = roomList[newRoom.id].game;
         res["roomSharedInfo"] = roomListSharedInfo[newRoom.id];
         
-        // set player's status
-        players[socket.id].status = "inRoom";
+        // set player's status and roomId
+        players[socket.id].status = player.playerStatus.inRoom;
+        players[socket.id].inRoomId = newRoom.id;
         // take the socket into a special channel
         socket.join(newRoom.id);
         
@@ -78,7 +81,7 @@ io.sockets.on("connection", function(socket){
     
     socket.on("joinRoom", function(data,fn){
         // only work roomlist status
-        if(players[socket.id].status != "inRoomlist") return; 
+        if(players[socket.id].status != player.playerStatus.inRoomlist) return; 
         
         var roomId;
         var res = {};
@@ -88,17 +91,39 @@ io.sockets.on("connection", function(socket){
         
         if(!roomList[roomId].private || roomList[roomId].password == password){
             res["okay"] = true;
-            // req has been accepted join the client into the requested room
+
+            // request has been accepted join the client into the requested room
+            roomList[roomId].addPlayer(socket.id);
+            
+            // prepare response
             res["game"] = roomList[roomId].game;
             res["roomSharedInfo"] = roomListSharedInfo[roomId];
             
-            players[socket.id].status = "inRoom";        
+            // set player's status and roomId
+            players[socket.id].status = player.playerStatus.inRoom;    
+            players[socket.id].inRoomId = roomId;
+            
             // take the socket into a special channel
             socket.join(roomId);
         }
+        
         else res["okay"] = false;
         
         fn(res);
+    });
+    
+    socket.on("leaveRoom", function(fn){
+        if(players[socket.id].status != player.playerStatus.inRoom) return; 
+        
+        var roomId = players[socket.id].inRoomId;
+        
+        // remove from room
+        roomList[roomId].removePlayer(socket.id);
+        
+        // set player's status
+        players[socket.id].status = player.playerStatus.inRoomlist;        
+        
+        fn(); // acknowledgement
     });
     
     // delete the player from players

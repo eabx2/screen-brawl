@@ -61,8 +61,13 @@
           
           <div id="settings-view" v-if="game.status == 'settings'">
               <span>room: {{ roomSharedInfo.title }}</span>
+              <ul>
+                  <li v-for="playerNickname in game.playersNickname">
+                      {{ playerNickname }}
+                  </li>
+              </ul>
               <button>Ready</button>
-              <button>Leave</button>
+              <button v-on:click="leaveRoom()">Leave</button>
           </div>
           
       </div>

@@ -34,12 +34,19 @@ exports.room = function(title,private,password,founder){
     
     this.addPlayer = function(id){
         this.players.push(id);
-        this.game.playersNickname.push(players[id]);
+        this.game.playersNickname.push(players[id].nickname);
     };
     
     this.removePlayer = function(id){
-        //..
-    }
+        var index = this.players.findIndex(el => el == id);
+        
+        this.players.splice(index,1);
+        this.game.playersNickname.splice(index,1);
+    };
+    
+    this.deleteRoom= function(){
+        
+    };
     
     this.addPlayer(founder); // add founder
     

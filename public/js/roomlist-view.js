@@ -56,6 +56,8 @@ function loadRoomList(data){
                 this.title = "";
                 this.private = false;
                 this.createRoomPassword = "";
+                
+                this.seenState = "roomlist"; // reset seenState
             },
             refreshRoomList: function(){
                 socket.emit("refreshRoomList",function(data){
