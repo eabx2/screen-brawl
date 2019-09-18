@@ -15,6 +15,14 @@ var gameViewVue = new Vue({
     }
 });
 
+socket.on("addPlayer", function(newPlayerNickname){
+    gameViewVue.game.playersNickname.push(newPlayerNickname);
+});
+
+socket.on("removePlayer", function(removePlayerIndex){
+    gameViewVue.game.playersNickname.splice(removePlayerIndex,1);
+});
+
 function loadGameView(data){
     roomListVue.hide = true; // hide roomlist
     

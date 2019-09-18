@@ -73,6 +73,7 @@ io.sockets.on("connection", function(socket){
         // set player's status and roomId
         players[socket.id].status = player.playerStatus.inRoom;
         players[socket.id].inRoomId = newRoom.id;
+        
         // take the socket into a special channel
         socket.join(newRoom.id);
         
@@ -80,14 +81,18 @@ io.sockets.on("connection", function(socket){
     });
     
     socket.on("joinRoom", function(data,fn){
+        
         // only work roomlist status
         if(players[socket.id].status != player.playerStatus.inRoomlist) return; 
         
-        var roomId;
+        var roomId = data.roomId;
+        
+        // if game is not in settings status then reject join request
+        if(roomList[roomId].game.status != game.gameStatus.settings) return;
+        
         var res = {};
         
-        roomId = data.roomId;
-        password = data.password;
+        var password = data.password;
         
         if(!roomList[roomId].private || roomList[roomId].password == password){
             res["okay"] = true;
@@ -117,8 +122,14 @@ io.sockets.on("connection", function(socket){
         
         var roomId = players[socket.id].inRoomId;
         
+        // reset player's room id
+        players[socket.id].inRoomId = "";
+        
         // remove from room
         roomList[roomId].removePlayer(socket.id);
+        
+        // remove from channel
+        socket.leave(roomId);
         
         // set player's status
         players[socket.id].status = player.playerStatus.inRoomlist;        
@@ -131,6 +142,7 @@ io.sockets.on("connection", function(socket){
         delete players[socket.id];
         console.log(socket.id + " - has been removed");
     });
+    
 });
 
 /***************************************/
@@ -140,6 +152,7 @@ io.sockets.on("connection", function(socket){
 var player = require("./server/player");
 var room = require("./server/room");
 var game = require("./server/game");
+//var game = require("./server/game");
 
 // keep tracking of players by their socket.id
 // the reason of using object instead of array is that make possible (key,value) concept
@@ -148,4 +161,4 @@ var players = {};
 // keep tracking of rooms
 var roomList = {};
 var roomListSharedInfo = {};
-room.init(roomList,roomListSharedInfo,players); // initiliaze 
+room.init(roomList,roomListSharedInfo,players,io); // initiliaze 
