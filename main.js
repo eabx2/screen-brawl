@@ -31,6 +31,8 @@ io.sockets.on("connection", function(socket){
     // add the player into players
     players[socket.id] = new player.player();
     console.log(socket.id + " - has been added");
+    
+    /*** inNickname functions ***/
 
     socket.on("nickname", function(data, fn){
         // only work nickname status
@@ -45,6 +47,8 @@ io.sockets.on("connection", function(socket){
         // send roomlist to the player
         fn(roomListSharedInfo);
     });
+    
+    /*** inRoomlist functions ***/
     
     socket.on("refreshRoomList", function(fn){
         // only work roomlist status
@@ -136,6 +140,24 @@ io.sockets.on("connection", function(socket){
         
         fn(); // acknowledgement
     });
+    
+    /*** inRoom functions ***/
+    
+    socket.on("setReadyMe", function(){
+        if(players[socket.id].status != player.playerStatus.inRoom) return;
+        
+        var roomId = players[socket.id].inRoomId;
+        roomList[roomId].setPlayerGameStatus(socket.id,game.playersGameStatus.ready);
+    });
+    
+    socket.on("setCancelMe", function(){
+        if(players[socket.id].status != player.playerStatus.inRoom) return;
+
+        var roomId = players[socket.id].inRoomId;
+        roomList[roomId].setPlayerGameStatus(socket.id,game.playersGameStatus.awating);
+    });
+    
+    /*** ***/
     
     // delete the player from players
     socket.on("disconnect", function(){

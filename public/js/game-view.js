@@ -2,6 +2,7 @@ var gameViewVue = new Vue({
     el: "#game-view", 
     data: {
         hide: true, // hide at the beginning
+        readyButtonText: "Ready",
         roomSharedInfo: "",
         game: ""
     },
@@ -11,16 +12,33 @@ var gameViewVue = new Vue({
                 roomListVue.hide = false;
                 gameViewVue.hide = true;
             });
+        },
+        clickReady: function(){
+            if(this.readyButtonText == "Ready"){
+                socket.emit("setReadyMe");
+                this.readyButtonText = "Cancel"
+            }
+            else {
+                socket.emit("setCancelMe");
+                this.readyButtonText = "Ready";
+            }
         }
     }
 });
 
 socket.on("addPlayer", function(newPlayerNickname){
     gameViewVue.game.playersNickname.push(newPlayerNickname);
+    gameViewVue.game.playersGameStatus.push("awating"); // default status
 });
 
 socket.on("removePlayer", function(removePlayerIndex){
     gameViewVue.game.playersNickname.splice(removePlayerIndex,1);
+    gameViewVue.game.playersGameStatus.splice(removePlayerIndex,1);
+});
+
+socket.on("setReadyPlayer", function(readyPlayerindex,status){
+    Vue.set(gameViewVue.game.playersGameStatus,readyPlayerindex,status)
+    // gameViewVue.game.playersGameStatus[readyPlayerindex] = status; // is NOT reactive
 });
 
 function loadGameView(data){

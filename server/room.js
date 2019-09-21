@@ -41,6 +41,7 @@ exports.room = function(title,private,password,admin){
     this.addPlayer = function(id){
         this.players.push(id);
         this.game.playersNickname.push(players[id].nickname);
+        this.game.playersGameStatus.push(game.playersGameStatus.awating);
         
         // notify clients in the room that there is a new player
         io.to(this.id).emit("addPlayer", players[id].nickname);
@@ -51,8 +52,9 @@ exports.room = function(title,private,password,admin){
         
         this.players.splice(index,1);
         this.game.playersNickname.splice(index,1);
+        this.game.playersGameStatus.splice(index,1);
         
-        // notify clients in the room that there is a new player
+        // notify clients in the room that a new player leaved
         io.in(this.id).emit("removePlayer", index);
         
         // if no one is in the room then delete the room
@@ -63,6 +65,32 @@ exports.room = function(title,private,password,admin){
         delete roomList[this.id];
         delete roomListSharedInfo[this.id];
     };
+    
+    this.setPlayerGameStatus = function(id,status){
+        var index = this.players.findIndex(el => el == id);
+        
+        this.game.playersGameStatus[index] = game.playersGameStatus[status];
+        
+        // notify clients in the room that indexed player's status has changed to ready
+        io.in(this.id).emit("setReadyPlayer", index, status);
+        
+        // if requested status is not 'ready' do not check whether if all players are ready
+        if(status == game.playersGameStatus.awating) return;
+        
+        var startGame = true;
+        for(var i = 0; i < this.game.playersGameStatus.length; i++){
+            if(this.game.playersGameStatus[i] != game.playersGameStatus.ready){
+                startGame = false;
+                break;
+            }
+        }
+        
+        // if all players are ready then start the game
+        if(startGame){
+            console.log("Game in room-" + this.id + " is about to begin!!");
+        }
+        
+    }
     
     this.addPlayer(admin); // add admin
     

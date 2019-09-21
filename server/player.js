@@ -1,7 +1,8 @@
 exports.playerStatus = {
     inNickname: "inNickname",
     inRoomlist: "inRoomlist",
-    inRoom: "inRoom"
+    inRoom: "inRoom",
+    inGame: "inGame"
 }
 
 exports.player = function(){
