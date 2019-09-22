@@ -23,14 +23,16 @@ function loadRoomList(data){
                 // send join request
                 
                 // if selected room is private then ask for password
-                if(this.roomList[this.selectedRoomIndex].private) this.seenState = "passwordView";
+                if(this.roomList[this.selectedRoomIndex].private) 
+                    this.seenState = "passwordView";
                 
-                else socket.emit("joinRoom",{roomId: this.roomList[this.selectedRoomIndex].id},function(res){
-                    // server callback that indicates whether joining is okay or not
-                   if(res.okay) {
-                       loadGameView(res);
-                   }
-                });
+                else 
+                    socket.emit("joinRoom",{roomId: this.roomList[this.selectedRoomIndex].id},function(res){
+                        // server callback that indicates whether joining is okay or not
+                        if(res.okay) {
+                            loadGameView(res);
+                        }
+                    });
                 
             },
             joinRoomPasswordViewOk: function(){
@@ -49,6 +51,7 @@ function loadRoomList(data){
             createRoom: function(){
                 socket.emit("createRoom",{title: this.title, private: this.private, password: this.createRoomPassword},function(res){
                     // server callback
+                    res.game["admin"] = true; // save it as admin
                     loadGameView(res);
                 });
                 

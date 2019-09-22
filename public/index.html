@@ -68,6 +68,15 @@
               </ul>
               <button v-on:click="clickReady()">{{ readyButtonText }}</button>
               <button v-on:click="leaveRoom()">Leave</button>
+              
+              <div id=admin-panel v-if="game.admin">
+                  <button v-on:click="startGame()">Start Game</button>
+              </div>
+              
+          </div>
+          
+          <div id="game-area" v-if="game.status == 'play'">
+              GAME-AREA
           </div>
           
       </div>

@@ -7,7 +7,8 @@ exports.init = function(_io){
 /***************************************/
 
 exports.gameStatus = {
-    settings: "settings"
+    settings: "settings",
+    play: "play"
 };
 
 exports.playersGameStatus = {

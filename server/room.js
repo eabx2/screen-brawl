@@ -74,8 +74,9 @@ exports.room = function(title,private,password,admin){
         // notify clients in the room that indexed player's status has changed to ready
         io.in(this.id).emit("setReadyPlayer", index, status);
         
-        // if requested status is not 'ready' do not check whether if all players are ready
-        if(status == game.playersGameStatus.awating) return;
+    }
+    
+    this.startGame = function(){
         
         var startGame = true;
         for(var i = 0; i < this.game.playersGameStatus.length; i++){
@@ -87,7 +88,8 @@ exports.room = function(title,private,password,admin){
         
         // if all players are ready then start the game
         if(startGame){
-            console.log("Game in room-" + this.id + " is about to begin!!");
+            this.game.status = game.gameStatus.play; // change game status of the game
+            io.in(this.id).emit("gameStatus",game.gameStatus.play); // emit this to all clients
         }
         
     }

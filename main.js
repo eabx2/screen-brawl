@@ -143,18 +143,44 @@ io.sockets.on("connection", function(socket){
     
     /*** inRoom functions ***/
     
-    socket.on("setReadyMe", function(){
+    socket.on("setReadyMe", function(fn){
         if(players[socket.id].status != player.playerStatus.inRoom) return;
         
         var roomId = players[socket.id].inRoomId;
+        
+        // only accept when the room is in setting
+        if(roomList[roomId].game.status != game.gameStatus.settings) return;
+        
         roomList[roomId].setPlayerGameStatus(socket.id,game.playersGameStatus.ready);
+        
+        fn();
     });
     
-    socket.on("setCancelMe", function(){
+    socket.on("setCancelMe", function(fn){
         if(players[socket.id].status != player.playerStatus.inRoom) return;
 
         var roomId = players[socket.id].inRoomId;
+        
+        // only accept when the room is in setting
+        if(roomList[roomId].game.status != game.gameStatus.settings) return;
+        
         roomList[roomId].setPlayerGameStatus(socket.id,game.playersGameStatus.awating);
+        
+        fn();
+    });
+    
+    socket.on("startGame", function(){
+        if(players[socket.id].status != player.playerStatus.inRoom) return;
+
+        var roomId = players[socket.id].inRoomId;
+        
+        // only accept when the room is in setting
+        if(roomList[roomId].game.status != game.gameStatus.settings) return;
+        
+        // if the client is not admin then return
+        if(roomList[roomId].admin != socket.id) return;
+        
+        roomList[roomId].startGame();
     });
     
     /*** ***/

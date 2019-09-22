@@ -11,17 +11,23 @@ var gameViewVue = new Vue({
             socket.emit("leaveRoom", function(){
                 roomListVue.hide = false;
                 gameViewVue.hide = true;
+                gameViewVue.readyButtonText = "Ready";
             });
         },
         clickReady: function(){
             if(this.readyButtonText == "Ready"){
-                socket.emit("setReadyMe");
-                this.readyButtonText = "Cancel"
+                socket.emit("setReadyMe", function(){
+                    gameViewVue.readyButtonText = "Cancel"
+                });
             }
             else {
-                socket.emit("setCancelMe");
-                this.readyButtonText = "Ready";
+                socket.emit("setCancelMe", function(){
+                    gameViewVue.readyButtonText = "Ready"; 
+                });
             }
+        },
+        startGame: function(){
+            socket.emit("startGame");
         }
     }
 });
@@ -36,15 +42,20 @@ socket.on("removePlayer", function(removePlayerIndex){
     gameViewVue.game.playersGameStatus.splice(removePlayerIndex,1);
 });
 
-socket.on("setReadyPlayer", function(readyPlayerindex,status){
-    Vue.set(gameViewVue.game.playersGameStatus,readyPlayerindex,status)
+socket.on("setReadyPlayer", function(readyPlayerIndex,status){
+    Vue.set(gameViewVue.game.playersGameStatus,readyPlayerIndex,status)
     // gameViewVue.game.playersGameStatus[readyPlayerindex] = status; // is NOT reactive
+});
+
+socket.on("gameStatus", function(gameStatus){
+    gameViewVue.game.status = gameStatus;
 });
 
 function loadGameView(data){
     roomListVue.hide = true; // hide roomlist
-    
+
     gameViewVue.hide = false; // show gameview
     gameViewVue.roomSharedInfo = data.roomSharedInfo;
     gameViewVue.game = data.game;
+    
 }
