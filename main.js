@@ -91,6 +91,8 @@ io.sockets.on("connection", function(socket){
         
         var roomId = data.roomId;
         
+        if(roomList[roomId].players.length == roomList[roomId].playerLimit) return
+        
         // if game is not in settings status then reject join request
         if(roomList[roomId].game.status != game.gameStatus.settings) return;
         
@@ -183,10 +185,30 @@ io.sockets.on("connection", function(socket){
         roomList[roomId].startGame();
     });
     
-    /*** ***/
+    /*** Game-Area ***/
+    
+    socket.on("key",function (keyCode,type){
+        if(players[socket.id].status != player.playerStatus.inRoom) return;
+        
+        var roomId = players[socket.id].inRoomId;
+        
+        // only accept when the room is in setting
+        if(roomList[roomId].game.status != game.gameStatus.play) return;
+        
+        roomList[roomId].game.moveShip(socket.id,keyCode,type);
+
+    });
     
     // delete the player from players
     socket.on("disconnect", function(){
+        
+        var roomId = players[socket.id].inRoomId;
+        
+        // if the game that socket is involved is still in settings status then remove player
+                
+        if(players[socket.id].status == player.playerStatus.inRoom && roomList[roomId].game.status == game.gameStatus.settings)
+            roomList[roomId].removePlayer(socket.id)
+        
         delete players[socket.id];
         console.log(socket.id + " - has been removed");
     });

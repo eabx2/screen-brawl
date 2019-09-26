@@ -46,7 +46,6 @@ function loadRoomList(data){
             },
             selectRoom: function(index){
                 this.selectedRoomIndex = index;
-                console.log("room " + this.roomList[this.selectedRoomIndex].id + " selected");
             },
             createRoom: function(){
                 socket.emit("createRoom",{title: this.title, private: this.private, password: this.createRoomPassword},function(res){

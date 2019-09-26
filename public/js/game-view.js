@@ -29,8 +29,30 @@ var gameViewVue = new Vue({
         startGame: function(){
             socket.emit("startGame");
         }
+    },
+    watch: {
+        "game.status": function(newStatus,oldStatus){
+            if(newStatus == "play"){
+                setup();
+                loop(); // start drawing
+            }
+            else if(newStatus == "settings")
+                noLoop(); // stop drawing
+        }
     }
 });
+
+
+function loadGameView(data){
+    roomListVue.hide = true; // hide roomlist
+
+    gameViewVue.hide = false; // show gameview
+    gameViewVue.roomSharedInfo = data.roomSharedInfo;
+    gameViewVue.game = data.game;
+    
+}
+
+/**** Settings ****/
 
 socket.on("addPlayer", function(newPlayerNickname){
     gameViewVue.game.playersNickname.push(newPlayerNickname);
@@ -51,11 +73,12 @@ socket.on("gameStatus", function(gameStatus){
     gameViewVue.game.status = gameStatus;
 });
 
-function loadGameView(data){
-    roomListVue.hide = true; // hide roomlist
+socket.on("shipArgs", function(shipId,property,value){
+    gameViewVue.game.ships[shipId].args[property] = value;
+});
 
-    gameViewVue.hide = false; // show gameview
-    gameViewVue.roomSharedInfo = data.roomSharedInfo;
-    gameViewVue.game = data.game;
-    
-}
+/**** Game-Area ****/
+
+socket.on("newShip", function(ship){
+    gameViewVue.game.ships.push(ship);
+});

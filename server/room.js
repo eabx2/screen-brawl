@@ -4,9 +4,8 @@ var roomListSharedInfo;
 var io;
 
 var game = require("./game");
-game.init(io);
-
 var UUID = require('uuid-js');
+var engine = require("./engine");
 
 // initialize function
 exports.init = function(_roomList,_roomListSharedInfo,_players,_io){
@@ -14,6 +13,7 @@ exports.init = function(_roomList,_roomListSharedInfo,_players,_io){
     roomListSharedInfo = _roomListSharedInfo;
     players = _players;
     io = _io;
+    game.init(io);
 }
 
 // room object
@@ -27,8 +27,9 @@ exports.room = function(title,private,password,admin){
     this.password = password;
     this.admin = admin;
     this.players = []; // keep track of players
+    this.playerLimit = 2;
     
-    this.game = new game.game(this.id);
+    this.game = new game.game(this);
     
     this.sharedInfo = function(){
         return {
@@ -51,6 +52,8 @@ exports.room = function(title,private,password,admin){
         var index = this.players.findIndex(el => el == id);
         
         this.players.splice(index,1);
+        
+        // remove from game object
         this.game.playersNickname.splice(index,1);
         this.game.playersGameStatus.splice(index,1);
         
@@ -78,6 +81,8 @@ exports.room = function(title,private,password,admin){
     
     this.startGame = function(){
         
+        if(this.players.length != 2) return; // 2 players condition
+        
         var startGame = true;
         for(var i = 0; i < this.game.playersGameStatus.length; i++){
             if(this.game.playersGameStatus[i] != game.playersGameStatus.ready){
@@ -90,9 +95,19 @@ exports.room = function(title,private,password,admin){
         if(startGame){
             this.game.status = game.gameStatus.play; // change game status of the game
             io.in(this.id).emit("gameStatus",game.gameStatus.play); // emit this to all clients
+            
+            // Initiliaze the ships
+            this.game.addNewShip(0,this.id,"rect",0,0,400,50,50,25);
+            this.game.addNewShip(1,this.id,"rect",0,0,400,450,50,25);
+            
+            // set gameInterval and start rendering
+            var passGame = this.game;
+            this.gameInterval = setInterval(function(){engine.engine(passGame);},1000/60);
+            
+            
         }
         
-    }
+    };
     
     this.addPlayer(admin); // add admin
     

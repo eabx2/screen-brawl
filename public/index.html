@@ -7,9 +7,11 @@
       
       <!-- Libraries -->
       <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+      
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+      
       <script src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js" ></script>
       
       <!-- CSS -->
@@ -57,9 +59,9 @@
           
       </div>
       
-      <div id="game-view" v-if="!hide" v-cloak>
+      <div id="game-view" v-show="!hide" v-cloak>
           
-          <div id="settings-view" v-if="game.status == 'settings'">
+          <div id="settings-show" v-if="game.status == 'settings'">
               <span>room: {{ roomSharedInfo.title }}</span>
               <ul>
                   <li v-bind:style="[game.playersGameStatus[index] == 'ready' ? {'background':'green'} : {'background':'red'}]" v-for="(playerNickname,index) in game.playersNickname">
@@ -75,8 +77,8 @@
               
           </div>
           
-          <div id="game-area" v-if="game.status == 'play'">
-              GAME-AREA
+          <div id="game-area" v-show="game.status == 'play'">
+              
           </div>
           
       </div>
@@ -92,5 +94,6 @@
     <script type="text/javascript" src="js/nickname-view.js"></script>
     <script type="text/javascript" src="js/roomlist-view.js"></script>
     <script type="text/javascript" src="js/game-view.js"></script>
+    <script type="text/javascript" src="js/sketch.js"></script>
 
 </html>
