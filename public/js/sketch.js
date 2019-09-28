@@ -8,6 +8,7 @@ function setup(){
 
 function draw(){
     background(200);
+    line(0,250,800,250);
     
     try{
         gameViewVue.game.ships.forEach(ship => {
@@ -15,9 +16,9 @@ function draw(){
                 case "rect":
                     rect(ship.args[0],ship.args[1],ship.args[2],ship.args[3]);
                     break;
-            default:
-        }
-    });
+                default:
+            }
+        });
     } catch(e){
         
     }

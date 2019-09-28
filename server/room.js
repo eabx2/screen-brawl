@@ -6,6 +6,7 @@ var io;
 var game = require("./game");
 var UUID = require('uuid-js');
 var engine = require("./engine");
+var maps = require("./maps");
 
 // initialize function
 exports.init = function(_roomList,_roomListSharedInfo,_players,_io){
@@ -30,6 +31,7 @@ exports.room = function(title,private,password,admin){
     this.playerLimit = 2;
     
     this.game = new game.game(this);
+    this.selectedMap = maps.maps.map1;
     
     this.sharedInfo = function(){
         return {
@@ -102,8 +104,8 @@ exports.room = function(title,private,password,admin){
             
             // set gameInterval and start rendering
             var passGame = this.game;
-            this.gameInterval = setInterval(function(){engine.engine(passGame);},1000/60);
-            
+            var passSelectedMap = this.selectedMap;
+            this.gameInterval = setInterval(function(){engine.engine(passGame,passSelectedMap);},1000/60);
             
         }
         
