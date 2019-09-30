@@ -19,6 +19,16 @@ function draw(){
                 default:
             }
         });
+        
+        gameViewVue.game.particules.forEach(particule => {
+            switch(particule.type){
+                case "rect":
+                    rect(particule.args[0],particule.args[1],particule.args[2],particule.args[3]);
+                    break;
+                default:
+            }
+        });
+        
     } catch(e){
         
     }

@@ -73,12 +73,21 @@ socket.on("gameStatus", function(gameStatus){
     gameViewVue.game.status = gameStatus;
 });
 
-socket.on("shipArgs", function(shipId,property,value){
-    gameViewVue.game.ships[shipId].args[property] = value;
-});
-
 /**** Game-Area ****/
 
 socket.on("newShip", function(ship){
     gameViewVue.game.ships.push(ship);
+});
+
+socket.on("shipArgs", function(shipId,property,value){
+    gameViewVue.game.ships[shipId].args[property] = value;
+});
+
+socket.on("newParticule", function(particule){
+    console.log(particule);
+   gameViewVue.game.particules.push(particule); 
+});
+
+socket.on("particuleArgs", function(index,property,value){
+    gameViewVue.game.particules[index].args[property] = value;
 });

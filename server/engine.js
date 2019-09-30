@@ -29,4 +29,13 @@ exports.engine = function(game,map){
                 
     });
     
+    // movement of particules
+    game.particules.forEach(function(particule){
+       
+        var newY = particule.args[1] + particule.verticalVelocity;
+        
+        particule.args[1] = newY;
+        
+    });
+    
 };

@@ -99,8 +99,8 @@ exports.room = function(title,private,password,admin){
             io.in(this.id).emit("gameStatus",game.gameStatus.play); // emit this to all clients
             
             // Initiliaze the ships
-            this.game.addNewShip(0,this.id,"rect",0,0,400,50,50,25);
-            this.game.addNewShip(1,this.id,"rect",0,0,400,450,50,25);
+            this.game.addNewShip(0,"rect",0,0,400,50,50,25);
+            this.game.addNewShip(1,"rect",0,0,400,450,50,25);
             
             // set gameInterval and start rendering
             var passGame = this.game;
