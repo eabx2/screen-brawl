@@ -6,7 +6,6 @@ var io;
 var game = require("./game");
 var UUID = require('uuid-js');
 var engine = require("./engine");
-var maps = require("./maps");
 
 // initialize function
 exports.init = function(_roomList,_roomListSharedInfo,_players,_io){
@@ -31,7 +30,6 @@ exports.room = function(title,private,password,admin){
     this.playerLimit = 2;
     
     this.game = new game.game(this);
-    this.selectedMap = maps.maps.map1;
     
     this.sharedInfo = function(){
         return {
@@ -94,7 +92,7 @@ exports.room = function(title,private,password,admin){
         }
         
         // if all players are ready then start the game
-        if(startGame){
+        if(startGame){            
             this.game.status = game.gameStatus.play; // change game status of the game
             io.in(this.id).emit("gameStatus",game.gameStatus.play); // emit this to all clients
             
@@ -104,9 +102,7 @@ exports.room = function(title,private,password,admin){
             
             // set gameInterval and start rendering
             var passGame = this.game;
-            var passSelectedMap = this.selectedMap;
-            this.gameInterval = setInterval(function(){engine.engine(passGame,passSelectedMap);},1000/60);
-            
+            this.gameInterval = setInterval(function(){engine.engine(passGame);},1000/60);
         }
         
     };

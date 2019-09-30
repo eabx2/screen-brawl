@@ -1,5 +1,12 @@
-function setup(){    
-    var canvas = createCanvas(800,500);
+function setup(){
+    
+    var canvas;
+    
+    if(gameViewVue.game)
+        canvas = createCanvas(gameViewVue.game.selectedMap.width,gameViewVue.game.selectedMap.height);
+    else
+        canvas = createCanvas(800,500);
+    
     canvas.parent("game-area");
     background(250);
     //frameRate(30);
@@ -8,10 +15,11 @@ function setup(){
 
 function draw(){
     background(200);
-    line(0,250,800,250);
     
     try{
-        gameViewVue.game.ships.forEach(ship => {
+        line(0,gameViewVue.game.selectedMap.borderY,gameViewVue.game.selectedMap.width,gameViewVue.game.selectedMap.borderY);
+        
+        gameViewVue.game.ships.forEach(function(ship){
             switch(ship.type){
                 case "rect":
                     rect(ship.args[0],ship.args[1],ship.args[2],ship.args[3]);
@@ -20,7 +28,8 @@ function draw(){
             }
         });
         
-        gameViewVue.game.particules.forEach(particule => {
+        gameViewVue.game.particules.forEach(function(particule,index,particules){
+                    
             switch(particule.type){
                 case "rect":
                     rect(particule.args[0],particule.args[1],particule.args[2],particule.args[3]);

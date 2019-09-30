@@ -36,8 +36,9 @@ var gameViewVue = new Vue({
                 setup();
                 loop(); // start drawing
             }
-            else if(newStatus == "settings")
+            else if(newStatus == "settings"){
                 noLoop(); // stop drawing
+            }
         }
     }
 });
@@ -73,6 +74,10 @@ socket.on("gameStatus", function(gameStatus){
     gameViewVue.game.status = gameStatus;
 });
 
+socket.on("selectedMap", function(map){
+   gameViewVue.game.selectedMap = map; 
+});
+
 /**** Game-Area ****/
 
 socket.on("newShip", function(ship){
@@ -84,8 +89,11 @@ socket.on("shipArgs", function(shipId,property,value){
 });
 
 socket.on("newParticule", function(particule){
-    console.log(particule);
    gameViewVue.game.particules.push(particule); 
+});
+
+socket.on("deleteParticule", function(index){
+   gameViewVue.game.particules.splice(index,1); 
 });
 
 socket.on("particuleArgs", function(index,property,value){

@@ -1,5 +1,7 @@
 var io;
 
+var maps = require("./maps");
+
 exports.init = function(_io){
     io = _io;
 };
@@ -24,6 +26,7 @@ exports.game = function(room){
     this.status = exports.gameStatus.settings;
     
     /**** Game-Area ****/
+    this.selectedMap = maps.maps.map1;
     this.ships = [];
     this.particules = [];
     
@@ -37,6 +40,11 @@ exports.game = function(room){
         let particule = new exports.particule(index,room.id,type,verticalVelocity,args);
         this.particules.push(particule);
         io.in(room.id).emit("newParticule",particule.drawable());
+    };
+    
+    this.deleteParticule = function(index){
+        this.particules.splice(index,1);
+        io.in(room.id).emit("deleteParticule",index);
     };
     
     // type can be pressed or released
@@ -71,29 +79,32 @@ exports.game = function(room){
             // avoid released request not after a pressed one
             if(this.ships[index].fireHoldDate == null) return;
             
+            // calculate factor
             var t = Date.now();
-            var temp = parseInt((t - this.ships[index].fireHoldDate) / 1000, 10);
+            var temp = parseInt((t - this.ships[index].fireHoldDate) / 200, 10);
             var factor = temp > 5 ? 5 : temp;
             
             // eliminate shapes that have no area
             if(factor == 0) return;
             
+            var width = factor * 5;
+            var height = factor * 5;
             var x = this.ships[index].args[0] + (this.ships[index].args[2] / 2);
             var y;
             var verticalVelocity;
             
-            var isUp = this.ships[index].args[1] < room.selectedMap.borderY ? true : false;
+            var isUp = this.ships[index].args[1] < this.selectedMap.borderY ? true : false;
             
             if(isUp){
-                y = this.ships[index].args[1] + 10;
+                y = this.ships[index].args[1] + this.ships[index].args[2] + 10;
                 verticalVelocity = 15;
             }
             else {
-                y = this.ships[index].args[1] + this.ships[index].args[2] + 10;
+                y = this.ships[index].args[1] - 15 - height;
                 verticalVelocity = -15;
             }
                         
-            this.addNewParticule(this.particules.length,"rect",verticalVelocity,x,y,factor*5,factor*5);
+            this.addNewParticule(this.particules.length,"rect",verticalVelocity,x,y,width,height);
             
             this.ships[index].fireHoldDate = null; // reset time
             
