@@ -23,12 +23,19 @@ function draw(){
             switch(ship.type){
                 case "rect":
                     rect(ship.args[0],ship.args[1],ship.args[2],ship.args[3]);
+                    text(ship.hp,ship.args[0],ship.args[1],ship.args[2],ship.args[3]);
                     break;
                 default:
             }
         });
         
         gameViewVue.game.particules.forEach(function(particule,index,particules){
+            
+            // fix me: delete a particule causes an inconsistency between clients and server
+            if(particule.args[1] > gameViewVue.game.selectedMap.height || particule.args[1] < 0){
+                //game.deleteParticule(index);
+                return;
+            }
                     
             switch(particule.type){
                 case "rect":

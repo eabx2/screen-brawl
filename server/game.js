@@ -96,12 +96,12 @@ exports.game = function(room){
             var isUp = this.ships[index].args[1] < this.selectedMap.borderY ? true : false;
             
             if(isUp){
-                y = this.ships[index].args[1] + this.ships[index].args[2] + 10;
-                verticalVelocity = 15;
+                y = this.ships[index].args[1] + this.ships[index].args[3] + 10;
+                verticalVelocity = 5;
             }
             else {
-                y = this.ships[index].args[1] - 15 - height;
-                verticalVelocity = -15;
+                y = this.ships[index].args[1] - 10;
+                verticalVelocity = -5;
             }
                         
             this.addNewParticule(this.particules.length,"rect",verticalVelocity,x,y,width,height);
@@ -130,6 +130,7 @@ exports.particuleArgsHandler = function(index,roomId){
 
 exports.ship = function(id,roomId,type, verticalVelocity, horizontalVelocity, ...args){
     this.id = id;
+    this.hp = 100;
     this.type = type;
     this.verticalVelocity = verticalVelocity;
     this.horizontalVelocity = horizontalVelocity;
@@ -139,20 +140,23 @@ exports.ship = function(id,roomId,type, verticalVelocity, horizontalVelocity, ..
     this.drawable = function(){
         return {
             type: this.type,
-            args: this.args
+            args: this.args,
+            hp: this.hp
         }
     };
 };
 
 exports.particule = function(index,roomId,type, verticalVelocity, ...args){
     this.type = type;
+    this.hp = args[2] * args[2];
     this.verticalVelocity = verticalVelocity;
     this.args = new Proxy(args[0],new exports.particuleArgsHandler(index,roomId));
     
     this.drawable = function(){
         return {
             type: this.type,
-            args: this.args
+            args: this.args,
+            hp: this.hp
         }
     }
     

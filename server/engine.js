@@ -1,3 +1,5 @@
+var collide = require("../lib/p5.collide2d.min");
+
 exports.engine = function(game){
         
     // movement of ships
@@ -29,19 +31,39 @@ exports.engine = function(game){
                 
     });
     
-    // movement of particules
+    // movement of particules and detection of collisions
     game.particules.forEach(function(particule,index,particules){
         
+        // fix me: delete a particule causes an inconsistency between clients and server
         // delete particules which are outside of the canvas
         if(particule.args[1] > game.selectedMap.height || particule.args[1] < 0){
-            game.deleteParticule(index);
+            //game.deleteParticule(index);
             return;
         }
-       
+        
+        // detection of collisions
+        
+        game.ships.forEach(function(ship){
+            var hit = collision(ship,particule);
+            
+            /* */
+            
+        });
+        
+        // movement of particules
+        
         var newY = particule.args[1] + particule.verticalVelocity;
         
         particule.args[1] = newY;
         
-    });
+    });    
     
+};
+
+function collision(o1,o2){
+    var hit;
+    
+    /* */
+    
+    return hit;
 };
