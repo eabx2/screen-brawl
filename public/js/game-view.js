@@ -84,6 +84,10 @@ socket.on("newShip", function(ship){
     gameViewVue.game.ships.push(ship);
 });
 
+socket.on("shipGeneral", function(shipId,property,value){
+    gameViewVue.game.ships[shipId][property] = value;
+});
+
 socket.on("shipArgs", function(shipId,property,value){
     gameViewVue.game.ships[shipId].args[property] = value;
 });
@@ -99,3 +103,8 @@ socket.on("deleteParticule", function(index){
 socket.on("particuleArgs", function(index,property,value){
     gameViewVue.game.particules[index].args[property] = value;
 });
+
+socket.on("particuleGeneral", function(index,property,value){
+    gameViewVue.game.particules[index][property] = value;
+});
+

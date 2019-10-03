@@ -41,13 +41,21 @@ exports.engine = function(game){
             return;
         }
         
+        // ignore particule with zero hp
+        if(particule.hp == 0) return;
+        
         // detection of collisions
         
+        // ships & particules
         game.ships.forEach(function(ship){
             var hit = collision(ship,particule);
             
-            /* */
-            
+            if(hit){
+                ship.hp = ship.hp - particule.hp;
+                particule.hp = 0; // kill the particule
+                return;
+            }
+                        
         });
         
         // movement of particules
@@ -63,7 +71,14 @@ exports.engine = function(game){
 function collision(o1,o2){
     var hit;
     
-    /* */
+    if(o1.type == "rect"){
+        switch(o2.type){
+            case "rect":
+                hit = collide.collideFunctions().collideRectRect(o1.args[0],o1.args[1],o1.args[2],o1.args[3],o2.args[0],o2.args[1],o2.args[2],o2.args[3])
+                break;
+            default:
+        }
+    }
     
     return hit;
 };

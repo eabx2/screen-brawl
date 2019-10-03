@@ -31,15 +31,15 @@ exports.game = function(room){
     this.particules = [];
     
     this.addNewShip = function(id,type,verticalVelocity,horizontalVelocity, ...args){
-        let ship = new exports.ship(id,room.id,"rect",verticalVelocity,horizontalVelocity,args);
-        this.ships.push(ship);
-        io.in(room.id).emit("newShip",ship.drawable());
+        let newShip = new ship(id,room.id,"rect",verticalVelocity,horizontalVelocity,args);
+        this.ships.push(new Proxy(newShip,new shipGeneralHandler(id,room.id)));
+        io.in(room.id).emit("newShip",newShip.drawable());
     };
     
     this.addNewParticule = function(index,type,verticalVelocity, ...args){
-        let particule = new exports.particule(index,room.id,type,verticalVelocity,args);
-        this.particules.push(particule);
-        io.in(room.id).emit("newParticule",particule.drawable());
+        let newParticule = new particule(index,room.id,type,verticalVelocity,args);
+        this.particules.push(new Proxy(newParticule,new particuleGeneralHandler(index,room.id)));
+        io.in(room.id).emit("newParticule",newParticule.drawable());
     };
     
     this.deleteParticule = function(index){
@@ -81,7 +81,7 @@ exports.game = function(room){
             
             // calculate factor
             var t = Date.now();
-            var temp = parseInt((t - this.ships[index].fireHoldDate) / 200, 10);
+            var temp = parseInt((t - this.ships[index].fireHoldDate) / 100, 10);
             var factor = temp > 5 ? 5 : temp;
             
             // eliminate shapes that have no area
@@ -96,11 +96,11 @@ exports.game = function(room){
             var isUp = this.ships[index].args[1] < this.selectedMap.borderY ? true : false;
             
             if(isUp){
-                y = this.ships[index].args[1] + this.ships[index].args[3] + 10;
+                y = this.ships[index].args[1] + this.ships[index].args[3] + 15;
                 verticalVelocity = 5;
             }
             else {
-                y = this.ships[index].args[1] - 10;
+                y = this.ships[index].args[1] - height - 15;
                 verticalVelocity = -5;
             }
                         
@@ -114,28 +114,42 @@ exports.game = function(room){
         
 };
 
-exports.shipArgsHandler = function(shipId,roomId){
+var shipGeneralHandler = function(shipId,roomId){
+  this.set = function(target,property,value){
+      if(property == "hp") io.in(roomId).emit("shipGeneral",shipId,property,value);
+      target[property] = value;
+  }
+};
+
+var shipArgsHandler = function(shipId,roomId){
   this.set = function(target,property,value){
       io.in(roomId).emit("shipArgs",shipId,property,value);
       target[property] = value;
   }; 
 };
 
-exports.particuleArgsHandler = function(index,roomId){
+var particuleGeneralHandler = function(index,roomId){
+  this.set = function(target,property,value){
+      if(property == "hp") io.in(roomId).emit("particuleGeneral",index,property,value);
+      target[property] = value;
+  }
+};
+
+var particuleArgsHandler = function(index,roomId){
   this.set = function(target,property,value){
       io.in(roomId).emit("particuleArgs",index,property,value);
       target[property] = value;
   }; 
 };
 
-exports.ship = function(id,roomId,type, verticalVelocity, horizontalVelocity, ...args){
+var ship = function(id,roomId,type, verticalVelocity, horizontalVelocity, ...args){
     this.id = id;
-    this.hp = 100;
+    this.hp = 1000;
     this.type = type;
     this.verticalVelocity = verticalVelocity;
     this.horizontalVelocity = horizontalVelocity;
     this.fireHoldDate = null; // indicates the time that ship has start to prepare for fire
-    this.args = new Proxy(args[0],new exports.shipArgsHandler(this.id,roomId)); // proxy
+    this.args = new Proxy(args[0],new shipArgsHandler(this.id,roomId)); // proxy
     
     this.drawable = function(){
         return {
@@ -146,11 +160,11 @@ exports.ship = function(id,roomId,type, verticalVelocity, horizontalVelocity, ..
     };
 };
 
-exports.particule = function(index,roomId,type, verticalVelocity, ...args){
+var particule = function(index,roomId,type, verticalVelocity, ...args){
     this.type = type;
-    this.hp = args[2] * args[2];
+    this.hp = parseInt(args[0][2]) * parseInt(args[0][2]);
     this.verticalVelocity = verticalVelocity;
-    this.args = new Proxy(args[0],new exports.particuleArgsHandler(index,roomId));
+    this.args = new Proxy(args[0],new particuleArgsHandler(index,roomId));
     
     this.drawable = function(){
         return {

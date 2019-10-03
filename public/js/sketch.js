@@ -36,6 +36,9 @@ function draw(){
                 //game.deleteParticule(index);
                 return;
             }
+            
+            // ignore particule with zero hp
+            if(particule.hp == 0) return;
                     
             switch(particule.type){
                 case "rect":
