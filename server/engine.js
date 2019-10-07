@@ -3,7 +3,9 @@ var collide = require("../lib/p5.collide2d.min");
 exports.engine = function(game){
         
     // movement of ships
-    game.ships.forEach(function(ship){
+    for(key in game.ships){
+        
+        let ship = game.ships[key];
         
         var requestedX = ship.args[0] + ship.horizontalVelocity;
         var requestedY = ship.args[1] + ship.verticalVelocity;
@@ -15,7 +17,7 @@ exports.engine = function(game){
         
         // height validation
         // block any Y request to outside of the area
-        if(requestedY < 0 || requestedY + ship.args[3] > game.selectedMap.height) return;
+        if(requestedY < 0 || requestedY + ship.args[3] > game.selectedMap.height) continue;
         
         // borderY validation
         var isUp = ship.args[1] < game.selectedMap.borderY ? true : false;
@@ -29,56 +31,76 @@ exports.engine = function(game){
         //var temp1 = isUp ? ship.args[3] + requestedY : requestedY; // if the current one is the up one then calculate it with its height
         if(isUp == (temp1 < game.selectedMap.borderY)) ship.args[1] = requestedY; 
                 
-    });
-    
+    };
+        
     // movement of particules and detection of collisions
-    game.particules.forEach(function(particule,index,particules){
+    for(key in game.particules){
         
         // fix me: delete a particule causes an inconsistency between clients and server
         // delete particules which are outside of the canvas
-        if(particule.args[1] > game.selectedMap.height || particule.args[1] < 0){
-            //game.deleteParticule(index);
-            return;
+        if(game.particules[key].args[1] > game.selectedMap.height || game.particules[key].args[1] < 0){
+            game.deleteParticule(key);
+            continue;
         }
-        
-        // ignore particule with zero hp
-        if(particule.hp == 0) return;
         
         // detection of collisions
         
-        // ships & particules
-        game.ships.forEach(function(ship){
-            var hit = collision(ship,particule);
+        // ships vs particules
+        for(shipKey in game.ships){
+            let ship = game.ships[shipKey];
+            // if the particules was deleted by previos ship fix it as break not continue
+            if(!game.particules[key]) continue;
+            
+            var hit = collision(ship,game.particules[key]);
             
             if(hit){
-                ship.hp = ship.hp - particule.hp;
-                particule.hp = 0; // kill the particule
+                ship.hp = ship.hp - game.particules[key].hp;
+                game.deleteParticule(key); // delete particule
                 return;
             }
                         
-        });
+        };
+        
+        // if the particules was deleted in ships vs particules iteration
+        if(!game.particules[key]) continue;
+        
+        // fix me: implement this part not forEach through all particules but combination of twos
+        // particules vs particules
+        
+        for(targetKey in game.particules){
+            
+            // if it is the particule itself then ignore
+            if(game.particules[key].id == game.particules[targetKey].id) continue;
+            
+            var hit = collision(game.particules[key],game.particules[targetKey]);
+            if(hit){
+                //console.log(hit);
+            }
+            
+        }
         
         // movement of particules
         
-        var newY = particule.args[1] + particule.verticalVelocity;
+        var newY = game.particules[key].args[1] + game.particules[key].verticalVelocity;
         
-        particule.args[1] = newY;
-        
-    });    
-    
+        game.particules[key].args[1] = newY;
+            
+    }
 };
 
 function collision(o1,o2){
+        
     var hit;
     
     if(o1.type == "rect"){
         switch(o2.type){
             case "rect":
-                hit = collide.collideFunctions().collideRectRect(o1.args[0],o1.args[1],o1.args[2],o1.args[3],o2.args[0],o2.args[1],o2.args[2],o2.args[3])
+                hit = collide.collideFunctions().collideRectRect(o1.args[0],o1.args[1],o1.args[2],o1.args[3],o2.args[0],o2.args[1],o2.args[2],o2.args[3]);
                 break;
             default:
         }
     }
     
     return hit;
+
 };

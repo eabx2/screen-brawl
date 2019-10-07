@@ -12,4 +12,7 @@ exports.player = function(){
     this.nickname = "";
     this.inRoomId = "";
     
+    /**** General ****/
+    this.shipId = "";
+    
 };

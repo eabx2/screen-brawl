@@ -19,7 +19,9 @@ function draw(){
     try{
         line(0,gameViewVue.game.selectedMap.borderY,gameViewVue.game.selectedMap.width,gameViewVue.game.selectedMap.borderY);
         
-        gameViewVue.game.ships.forEach(function(ship){
+        for(key in gameViewVue.game.ships){
+            var ship = gameViewVue.game.ships[key];
+            
             switch(ship.type){
                 case "rect":
                     rect(ship.args[0],ship.args[1],ship.args[2],ship.args[3]);
@@ -27,26 +29,21 @@ function draw(){
                     break;
                 default:
             }
-        });
+        };
         
-        gameViewVue.game.particules.forEach(function(particule,index,particules){
-            
-            // fix me: delete a particule causes an inconsistency between clients and server
-            if(particule.args[1] > gameViewVue.game.selectedMap.height || particule.args[1] < 0){
-                //game.deleteParticule(index);
-                return;
-            }
+        for(key in gameViewVue.game.particules){
             
             // ignore particule with zero hp
-            if(particule.hp == 0) return;
-                    
-            switch(particule.type){
+            if(gameViewVue.game.particules[key].hp == 0) continue;
+            
+            switch(gameViewVue.game.particules[key].type){
                 case "rect":
-                    rect(particule.args[0],particule.args[1],particule.args[2],particule.args[3]);
+                    rect(gameViewVue.game.particules[key].args[0],gameViewVue.game.particules[key].args[1],gameViewVue.game.particules[key].args[2],gameViewVue.game.particules[key].args[3]);
                     break;
                 default:
             }
-        });
+            
+        }
         
     } catch(e){
         

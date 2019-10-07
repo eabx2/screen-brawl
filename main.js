@@ -195,11 +195,13 @@ io.sockets.on("connection", function(socket){
         // only accept when the room is in setting
         if(roomList[roomId].game.status != game.gameStatus.play) return;
         
+        var shipId = players[socket.id].shipId;
+                
         // fire
         if(keyCode == 32) 
-            roomList[roomId].game.fire(socket.id,type);
+            roomList[roomId].game.fire(shipId,type);
         else
-            roomList[roomId].game.moveShip(socket.id,keyCode,type);
+            roomList[roomId].game.moveShip(shipId,keyCode,type);
 
     });
     

@@ -81,7 +81,7 @@ socket.on("selectedMap", function(map){
 /**** Game-Area ****/
 
 socket.on("newShip", function(ship){
-    gameViewVue.game.ships.push(ship);
+    gameViewVue.game.ships[ship.id] = ship;
 });
 
 socket.on("shipGeneral", function(shipId,property,value){
@@ -93,18 +93,18 @@ socket.on("shipArgs", function(shipId,property,value){
 });
 
 socket.on("newParticule", function(particule){
-   gameViewVue.game.particules.push(particule); 
+    gameViewVue.game.particules[particule.id] = particule; 
 });
 
-socket.on("deleteParticule", function(index){
-   gameViewVue.game.particules.splice(index,1); 
+socket.on("deleteParticule", function(id){
+    delete gameViewVue.game.particules[id]; 
 });
 
-socket.on("particuleArgs", function(index,property,value){
-    gameViewVue.game.particules[index].args[property] = value;
+socket.on("particuleArgs", function(id,property,value){
+    gameViewVue.game.particules[id].args[property] = value;
 });
 
-socket.on("particuleGeneral", function(index,property,value){
-    gameViewVue.game.particules[index][property] = value;
+socket.on("particuleGeneral", function(id,property,value){
+    gameViewVue.game.particules[id][property] = value;
 });
 
