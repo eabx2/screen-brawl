@@ -133,16 +133,31 @@ var shipArgsHandler = function(shipId,roomId){
   }; 
 };
 
-var particuleGeneralHandler = function(index,roomId){
+var particuleGeneralHandler = function(id,roomId){
   this.set = function(target,property,value){
-      if(property == "hp") io.in(roomId).emit("particuleGeneral",index,property,value);
+      
+      if(property == "hp" && value > 0){
+                    
+          io.in(roomId).emit("particuleGeneral",id,property,value);
+          
+          // w/h : 5 10 15 20 25
+          // hp : 25 100 225 400 625
+          
+          var factor = Math.floor(Math.sqrt(Math.floor(value/25)));
+          factor = factor == 0 ? 1 : factor;
+          
+          target.args[2] = factor * 5;
+          target.args[3] = factor * 5;
+      }
+      
       target[property] = value;
+      
   }
 };
 
-var particuleArgsHandler = function(index,roomId){
+var particuleArgsHandler = function(id,roomId){
   this.set = function(target,property,value){
-      io.in(roomId).emit("particuleArgs",index,property,value);
+      io.in(roomId).emit("particuleArgs",id,property,value);
       target[property] = value;
   }; 
 };

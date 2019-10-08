@@ -56,7 +56,7 @@ exports.engine = function(game){
             if(hit){
                 ship.hp = ship.hp - game.particules[key].hp;
                 game.deleteParticule(key); // delete particule
-                return;
+                break;
             }
                         
         };
@@ -64,9 +64,7 @@ exports.engine = function(game){
         // if the particules was deleted in ships vs particules iteration
         if(!game.particules[key]) continue;
         
-        // fix me: implement this part not forEach through all particules but combination of twos
-        // particules vs particules
-        
+        // particules vs particules        
         for(targetKey in game.particules){
             
             // if it is the particule itself then ignore
@@ -74,10 +72,20 @@ exports.engine = function(game){
             
             var hit = collision(game.particules[key],game.particules[targetKey]);
             if(hit){
-                //console.log(hit);
+                var temp = game.particules[key].hp;
+                game.particules[key].hp = game.particules[key].hp - game.particules[targetKey].hp;
+                game.particules[targetKey].hp = game.particules[targetKey].hp - temp;
+                
+                if(game.particules[key].hp <= 0) game.deleteParticule(key);
+                if(game.particules[targetKey].hp <= 0) game.deleteParticule(targetKey);
+                
+                break; // by the defined game mechanisms
             }
             
         }
+        
+        // if the particules was deleted in particules vs particules iteration
+        if(!game.particules[key]) continue;
         
         // movement of particules
         
