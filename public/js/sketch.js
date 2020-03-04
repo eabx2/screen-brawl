@@ -7,7 +7,7 @@ function setup(){
     else
         canvas = createCanvas(800,500);
     
-    canvas.parent("game-area");
+    canvas.parent("canvas-area");
     background(250);
     //frameRate(30);
     noLoop();

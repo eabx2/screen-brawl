@@ -20,19 +20,19 @@
   </head>
   <body>
       
-      <div id="nickname-view">
-          
-          <label>Username: </label>
-          <input id="nickname-input" maxlength="25" type="text">
-          <button id="nickname-input-button">Ok</button>
-          
+      <div id="nickname-view" class="center">
+          <div>
+              <label>Username: </label>
+              <input id="nickname-input" maxlength="25" type="text">
+              <button id="nickname-input-button">Ok</button>
+          </div>
       </div>
       
-      <div id="roomlist-view" v-if="!hide" v-cloak>
+      <div id="roomlist-view" class="center" v-if="!hide" v-cloak>
           
           <ul v-if="seenState == 'roomlist'">
               <li v-bind:style="[index == selectedRoomIndex ? {'background':'grey'} : {'background':'white'}]" v-for="(room,index) in roomList" v-on:click="selectRoom(index)" v-on:dblclick= "joinRoom()">
-                  {{room}}
+                  Id: {{ room.id }} | Title: {{ room.title }}
               </li>
               <button :disabled="selectedRoomIndex == null" v-on:click="joinRoom()">Join Room</button>
               <button v-on:click="seenState = 'createRoomView'">Create Room</button>
@@ -62,7 +62,7 @@
       <div id="game-view" v-show="!hide" v-cloak>
           
           <div id="settings-show" v-if="game.status == 'settings'">
-              <span>room: {{ roomSharedInfo.title }}</span>
+              <span>Title: {{ roomSharedInfo.title }} <br> Id: {{ roomSharedInfo.id }}</span>
               <ul>
                   <li v-bind:style="[game.playersGameStatus[index] == 'ready' ? {'background':'green'} : {'background':'red'}]" v-for="(playerNickname,index) in game.playersNickname">
                       {{ playerNickname }}
@@ -78,7 +78,8 @@
           </div>
           
           <div id="game-area" v-show="game.status == 'play'">
-              
+              <div id="canvas-area"></div>
+              <div id="info-table"></div>
           </div>
           
           <div id="end-game" v-if="game.status == 'done'">
