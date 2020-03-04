@@ -10,7 +10,7 @@ var express = require("express");
 var app = express();
 
 // run server
-var server = app.listen(port, function(){
+var server = app.listen(process.env.PORT || port, function(){
     var host = server.address().address;
     var port = server.address().port;
     console.log("screen-brawl server is listening at http://" + host + ":" + port);
