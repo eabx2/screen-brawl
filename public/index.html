@@ -81,6 +81,12 @@
               
           </div>
           
+          <div id="end-game" v-if="game.status == 'done'">
+              <span v-if="Object.values(game.ships)[1].hp <= 0">Player 1 Won</span>
+              <span v-if="Object.values(game.ships)[0].hp <= 0">Player 2 Won</span>
+              <button v-on:click="game.status = 'settings'">OK</button>
+          </div>
+          
       </div>
 
   </body>

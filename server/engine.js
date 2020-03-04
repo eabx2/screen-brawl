@@ -55,6 +55,13 @@ exports.engine = function(game){
             
             if(hit){
                 ship.hp = ship.hp - game.particules[key].hp;
+                
+                // check if the ship is dead
+                if(ship.hp <= 0){
+                    game.done();
+                    return;
+                }
+                
                 game.deleteParticule(key); // delete particule
                 break;
             }
@@ -94,6 +101,9 @@ exports.engine = function(game){
         game.particules[key].args[1] = newY;
             
     }
+    
+    
+    
 };
 
 function collision(o1,o2){

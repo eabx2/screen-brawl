@@ -12,7 +12,8 @@ exports.init = function(_io,_UUID){
 
 exports.gameStatus = {
     settings: "settings",
-    play: "play"
+    play: "play",
+    done: "done"
 };
 
 exports.playersGameStatus = {
@@ -31,6 +32,10 @@ exports.game = function(room){
     this.selectedMap = maps.maps.map1;
     this.ships = {};
     this.particules = {}; // store particules as an object rather than an array
+    
+    this.done = function(){
+        room.finishGame();
+    }
     
     this.addNewShip = function(playerIndex,type,verticalVelocity,horizontalVelocity, ...args){
         var newShipId = UUID.create().toString();
@@ -86,7 +91,7 @@ exports.game = function(room){
             
             // calculate factor
             var t = Date.now();
-            var temp = parseInt((t - this.ships[shipId].fireHoldDate) / 100, 10);
+            var temp = parseInt((t - this.ships[shipId].fireHoldDate) / 80, 10);
             var factor = temp > 5 ? 5 : temp;
             
             // eliminate shapes that have no area
@@ -102,11 +107,11 @@ exports.game = function(room){
             
             if(isUp){
                 y = this.ships[shipId].args[1] + this.ships[shipId].args[3] + 15;
-                verticalVelocity = 2;
+                verticalVelocity = 4;
             }
             else {
                 y = this.ships[shipId].args[1] - height - 15;
-                verticalVelocity = -2;
+                verticalVelocity = -4;
             }
                         
             this.addNewParticule("rect",verticalVelocity,x,y,width,height);

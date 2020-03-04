@@ -36,6 +36,7 @@ exports.room = function(title,private,password,admin){
             id: this.id,
             title: this.title,
             private: this.private,
+            admin: this.admin
         }
     };
     
@@ -106,6 +107,19 @@ exports.room = function(title,private,password,admin){
         }
         
     };
+    
+    this.finishGame = function(){
+        console.log("game in room: " + this.id + " is done");
+        
+        clearInterval(this.gameInterval); // stop game loop
+        
+        // reset ships and particules
+        this.game.ships = {};
+        this.game.particules = {};
+        
+        this.game.status = game.gameStatus.settings; // set status as settings in server
+        io.in(this.id).emit("gameStatus",game.gameStatus.done); // but emit it as done in client
+    }
     
     this.addPlayer(admin); // add admin
     

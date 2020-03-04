@@ -37,7 +37,13 @@ var gameViewVue = new Vue({
                 loop(); // start drawing
             }
             else if(newStatus == "settings"){
+                gameViewVue.game.ships = {}; // reset ships
+                gameViewVue.game.particules = {}; // reset particules
                 noLoop(); // stop drawing
+            }
+            else if(newStatus == "done"){
+                noCanvas();
+                gameViewVue.clickReady();
             }
         }
     }
